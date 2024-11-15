@@ -43,10 +43,12 @@ const App = () => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h3" component="h1" gutterBottom textAlign="center" sx={{ padding: 2 }}>
-        Rule Builder
-      </Typography>
-      <Divider sx={{ marginBottom: 4 }} />
+      <Box textAlign="center" sx={{ paddingY: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
+          Rule Builder
+        </Typography>
+        <Divider sx={{ marginBottom: 4 }} />
+      </Box>
 
       <Grid container spacing={2}>
         {/* Left Sidebar - Column Selector */}
