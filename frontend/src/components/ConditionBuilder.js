@@ -54,7 +54,7 @@ const ConditionBuilder = ({ onAddCondition }) => {
       <Button
         variant="outlined"
         onClick={handleAdd}
-        startIcon={<AddIcon />}  // Add icon here
+        startIcon={<AddIcon />}
       >
         Add Condition
       </Button>

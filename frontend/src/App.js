@@ -1,43 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import ColumnSelector from './components/ColumnSelector';
-import RuleBuilder from './components/RuleBuilder';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import './App.css';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import ColumnSelector from './components/ColumnSelector';
+import RuleEditor from './components/RuleEditor';
 
 const App = () => {
   const [rules, setRules] = useState([]);
 
-  // Fetch existing rules from backend
-  useEffect(() => {
-    axios.get('http://localhost:5001/api/rules')
+  // Function to add a new rule
+  const handleAddRule = () => {
+    setRules([...rules, { name: '', conditions: [] }]);
+  };
+
+  // Function to update a rule by index
+  const handleUpdateRule = (index, updatedRule) => {
+    const updatedRules = [...rules];
+    updatedRules[index] = updatedRule;
+    setRules(updatedRules);
+  };
+
+  // Function to remove a rule
+  const handleRemoveRule = (index) => {
+    const updatedRules = rules.filter((_, i) => i !== index);
+    setRules(updatedRules);
+  };
+
+  // Function to submit all rules
+  const handleSubmit = () => {
+    axios.post('http://localhost:5001/api/rules', { rules })
       .then((response) => {
-        console.log("Fetched rules:", response.data.transformations); // Debugging line
-        setRules(response.data.transformations);
+        alert(response.data.message);
+        setRules([]); // Clear all rules after submission
       })
       .catch((error) => {
-        console.error('Error fetching rules:', error);
-      });
-  }, []);
-
-  const handleSaveRule = (newRule) => {
-    if (rules.find((rule) => rule.name === newRule.name)) {
-      alert('Rule with this name already exists! Choose another name.');
-      return;
-    }
-
-    // Save new rule to backend
-    axios.post('http://localhost:5001/api/rules', newRule)
-      .then((response) => {
-        console.log(response.data.message); // Optional success message
-        setRules([...rules, newRule]);
-      })
-      .catch((error) => {
-        console.error('Error saving rule:', error);
+        console.error('Error submitting rules:', error);
       });
   };
 
@@ -51,29 +53,42 @@ const App = () => {
       </Box>
 
       <Grid container spacing={2}>
-        {/* Left Sidebar - Column Selector */}
+        {/* Left Side - Column Selector */}
         <Grid item xs={12} md={4}>
-          <Box sx={{
-            height: '80vh',
-            overflowY: 'auto',
-            padding: 2,
-            boxShadow: 3,
-            borderRadius: 1,
-            backgroundColor: 'white'
-          }}>
+          <Box sx={{ height: '80vh', overflowY: 'auto', padding: 2, boxShadow: 3, borderRadius: 1, backgroundColor: 'white' }}>
             <ColumnSelector />
           </Box>
         </Grid>
 
-        {/* Right Main Content - Rule Builder and Condition Builder */}
+        {/* Right Side - Rule Builder and Buttons */}
         <Grid item xs={12} md={8}>
-          <Box sx={{
-            padding: 2,
-            boxShadow: 3,
-            borderRadius: 1,
-            backgroundColor: 'white'
-          }}>
-            <RuleBuilder onSave={handleSaveRule} />
+          <Box sx={{ padding: 2, backgroundColor: 'white', boxShadow: 3, borderRadius: 1 }}>
+            {rules.map((rule, index) => (
+              <RuleEditor
+                key={index}
+                index={index}
+                rule={rule}
+                onUpdateRule={handleUpdateRule}
+                onRemoveRule={handleRemoveRule}
+              />
+            ))}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddRule}
+              startIcon={<AddIcon />}
+              sx={{ marginTop: 2 }}
+            >
+              Create Rule
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleSubmit}
+              sx={{ marginTop: 2, marginLeft: 2 }}
+            >
+              Submit All Rules
+            </Button>
           </Box>
         </Grid>
       </Grid>

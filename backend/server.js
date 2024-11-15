@@ -31,36 +31,57 @@ app.get('/api/columns', (req, res) => {
   });
 });
 
+// Function to add ABS() around columns in numberTypeColumns where applicable
+const applyAbsToNumberColumns = (condition) => {
+  return condition.replace(/\b(\w+)\b/g, (column) => {
+    // Remove prefix to check if the column is in numberTypeColumns
+    const baseColumnName = column.replace(new RegExp(`^(${primaryDSPrefix}|${secondaryDSPrefix})`), '');
+
+    // If the base column name is in numberTypeColumns, wrap with ABS()
+    if (numberTypeColumns.includes(baseColumnName)) {
+      return `ABS(${column})`;
+    }
+
+    // Otherwise, return the column as is
+    return column;
+  });
+};
+
 app.post('/api/rules', (req, res) => {
-  const { name, conditions } = req.body;
-  const transformations = JSON.parse(fs.readFileSync('transformations.json', 'utf-8'));
-
-  // Check if a rule with the same name already exists
-  if (transformations.transformations.some((rule) => rule.name === name)) {
-    return res.status(400).json({ error: 'Rule name already exists!' });
-  }
-
-  // Function to add ABS() around columns in numberTypeColumns with the correct prefix
-  const applyAbsToNumberColumns = (condition) => {
-    return condition.replace(/\b(\w+)\b/g, (column) => {
-      // Check if the base column name without prefix is in numberTypeColumns
-      const baseColumnName = column.replace(new RegExp(`^(${primaryDSPrefix}|${secondaryDSPrefix})`), '');
-      if (numberTypeColumns.includes(baseColumnName)) {
-        return `ABS(${column})`;
+    const rules = req.body.rules; // Expecting an array of rules
+  
+    if (!Array.isArray(rules)) {
+      return res.status(400).json({ error: 'Invalid data format. Expected an array of rules.' });
+    }
+  
+    const transformations = JSON.parse(fs.readFileSync('transformations.json', 'utf-8'));
+  
+    // Check for duplicate rule names in transformations
+    const existingRuleNames = new Set(transformations.transformations.map((rule) => rule.name));
+    for (const rule of rules) {
+      if (existingRuleNames.has(rule.name)) {
+        return res.status(400).json({ error: `Rule name "${rule.name}" already exists!` });
       }
-      return column;
+    }
+  
+    // Process each rule and add it to transformations
+    rules.forEach((rule) => {
+      const { name, conditions } = rule;
+  
+      // Ensure all conditions are processed individually and concatenated with "AND"
+      const processedConditions = conditions.map(applyAbsToNumberColumns);
+      const finalCondition = processedConditions.join(' AND '); // Join all conditions with "AND"
+  
+      // Add the new rule with the processed condition
+      transformations.transformations.push({ name, condition: finalCondition });
     });
-  };
-
-  // Process each condition and apply ABS() to relevant columns
-  const processedConditions = conditions.map(applyAbsToNumberColumns);
-
-  // Save the new rule with the processed condition
-  transformations.transformations.push({ name, condition: processedConditions.join(' AND ') });
-  fs.writeFileSync('transformations.json', JSON.stringify(transformations, null, 2));
-
-  res.json({ message: 'Rule added successfully!' });
-});
+  
+    // Save the updated transformations file
+    fs.writeFileSync('transformations.json', JSON.stringify(transformations, null, 2));
+  
+    res.json({ message: 'Rules added successfully!' });
+  });
+  
 
 const PORT = 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
