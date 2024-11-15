@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import ConditionBuilder from './ConditionBuilder';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 
 const RuleBuilder = ({ onSave }) => {
   const [ruleName, setRuleName] = useState('');
@@ -20,17 +25,29 @@ const RuleBuilder = ({ onSave }) => {
   };
 
   return (
-    <div>
-      <h3>Create Rule</h3>
-      <input
-        type="text"
-        placeholder="Rule Name"
+    <Box sx={{ padding: 2, borderRadius: 1, boxShadow: 3, backgroundColor: 'white' }}>
+      <Typography variant="h6" gutterBottom>
+        Create Rule
+      </Typography>
+      <TextField
+        label="Rule Name"
+        variant="outlined"
+        fullWidth
         value={ruleName}
         onChange={(e) => setRuleName(e.target.value)}
+        sx={{ marginBottom: 2 }}
       />
       <ConditionBuilder onAddCondition={addCondition} />
-      <button onClick={handleSave}>Save Rule</button>
-    </div>
+      <Divider sx={{ marginY: 2 }} />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSave}
+        fullWidth
+      >
+        Save Rule
+      </Button>
+    </Box>
   );
 };
 

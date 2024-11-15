@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ColumnSelector from './components/ColumnSelector';
 import RuleBuilder from './components/RuleBuilder';
-import RuleList from './components/RuleList';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import './App.css';
 
 const App = () => {
@@ -38,12 +42,40 @@ const App = () => {
   };
 
   return (
-    <div className="App">
-      <h1>Rule Builder</h1>
-      <ColumnSelector />
-      <RuleBuilder onSave={handleSaveRule} />
-      {/* <RuleList rules={rules} /> */}
-    </div>
+    <Container maxWidth="lg">
+      <Typography variant="h3" component="h1" gutterBottom textAlign="center" sx={{ padding: 2 }}>
+        Rule Builder
+      </Typography>
+      <Divider sx={{ marginBottom: 4 }} />
+
+      <Grid container spacing={2}>
+        {/* Left Sidebar - Column Selector */}
+        <Grid item xs={12} md={4}>
+          <Box sx={{
+            height: '80vh',
+            overflowY: 'auto',
+            padding: 2,
+            boxShadow: 3,
+            borderRadius: 1,
+            backgroundColor: 'white'
+          }}>
+            <ColumnSelector />
+          </Box>
+        </Grid>
+
+        {/* Right Main Content - Rule Builder and Condition Builder */}
+        <Grid item xs={12} md={8}>
+          <Box sx={{
+            padding: 2,
+            boxShadow: 3,
+            borderRadius: 1,
+            backgroundColor: 'white'
+          }}>
+            <RuleBuilder onSave={handleSaveRule} />
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 

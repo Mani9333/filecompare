@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Box from '@mui/material/Box';
+import AddIcon from '@mui/icons-material/Add';
 
 const ConditionBuilder = ({ onAddCondition }) => {
   const [column, setColumn] = useState('');
@@ -19,30 +24,41 @@ const ConditionBuilder = ({ onAddCondition }) => {
   };
 
   return (
-    <div>
-      <h4>Add Condition</h4>
-      <input
-        type="text"
-        placeholder="Column"
+    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', marginBottom: 2 }}>
+      <TextField
+        label="Column"
+        variant="outlined"
         value={column}
         onChange={(e) => setColumn(e.target.value)}
       />
-      <select value={operator} onChange={(e) => setOperator(e.target.value)}>
-        <option value="">Select Operator</option>
+      <TextField
+        select
+        label="Operator"
+        value={operator}
+        onChange={(e) => setOperator(e.target.value)}
+        variant="outlined"
+        sx={{ width: '120px' }}
+      >
         {operators.map((op) => (
-          <option key={op} value={op}>
+          <MenuItem key={op} value={op}>
             {op}
-          </option>
+          </MenuItem>
         ))}
-      </select>
-      <input
-        type="text"
-        placeholder="Value"
+      </TextField>
+      <TextField
+        label="Value"
+        variant="outlined"
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
-      <button onClick={handleAdd}>Add Condition</button>
-    </div>
+      <Button
+        variant="outlined"
+        onClick={handleAdd}
+        startIcon={<AddIcon />}  // Add icon here
+      >
+        Add Condition
+      </Button>
+    </Box>
   );
 };
 

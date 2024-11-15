@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Grid from '@mui/material/Grid';
 
 const ColumnSelector = () => {
-  // Initialize as empty arrays
   const [primaryColumns, setPrimaryColumns] = useState([]);
   const [secondaryColumns, setSecondaryColumns] = useState([]);
 
@@ -19,23 +25,47 @@ const ColumnSelector = () => {
 
   return (
     <div>
-      <h3>Available Columns</h3>
-      <div>
-        <h4>Primary Columns (prerun)</h4>
-        <ul>
-          {primaryColumns.map((column, index) => (
-            <li key={index}>{column}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h4>Secondary Columns (postrun)</h4>
-        <ul>
-          {secondaryColumns.map((column, index) => (
-            <li key={index}>{column}</li>
-          ))}
-        </ul>
-      </div>
+      <Typography variant="h5" gutterBottom>
+        Available Columns
+      </Typography>
+
+      <Grid container spacing={2}>
+        {/* Primary Columns */}
+        <Grid item xs={6}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Primary Columns
+              </Typography>
+              <List sx={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {primaryColumns.map((column, index) => (
+                  <ListItem key={index} disablePadding>
+                    <ListItemText primary={column} />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Secondary Columns */}
+        <Grid item xs={6}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Secondary Columns
+              </Typography>
+              <List sx={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {secondaryColumns.map((column, index) => (
+                  <ListItem key={index} disablePadding>
+                    <ListItemText primary={column} />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </div>
   );
 };
