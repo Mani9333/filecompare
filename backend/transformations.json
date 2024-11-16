@@ -7,38 +7,6 @@
     {
       "name": "rule2",
       "condition": "prerunc != postrunc AND prerund IN ('a', 'b', 'c') AND postrund NOT IN ('a', 'b', 'c')"
-    },
-    {
-      "name": "abcd",
-      "condition": "prerunf < 4"
-    },
-    {
-      "name": "abccc",
-      "condition": "ABS(preruna) < 2"
-    },
-    {
-      "name": "jsldkfjlkjds",
-      "condition": ""
-    },
-    {
-      "name": "dfasfsd",
-      "condition": "ABS(preruna) < 1 AND ABS(prerunb) = mani"
-    },
-    {
-      "name": "asjdflsj",
-      "condition": "prerunc != mani"
-    },
-    {
-      "name": "asfksjdkl",
-      "condition": "ABS(preruna) < 3 AND ABS(prerunb) > 3 AND prerund IN `mani`"
-    },
-    {
-      "name": "asdfasfds",
-      "condition": "asfsfasf"
-    },
-    {
-      "name": "asf",
-      "condition": "asfsd"
     }
   ]
 }
