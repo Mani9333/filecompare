@@ -149,8 +149,34 @@ const isNumericColumn = (column) => {
 };
 
 // Helper function to validate conditions
+// const validateCondition = (condition) => {
+//   const numericOperations = ['+', '-', '*', '/', 'ABS(', '<', '>', '<=', '>='];
+//   const nonAllowedStringOperations = ['MIN', 'MAX']; // Add MIN and MAX for validation
+
+//   const openingParentheses = (condition.match(/\(/g) || []).length;
+//   const closingParentheses = (condition.match(/\)/g) || []).length;
+
+//   if (openingParentheses !== closingParentheses) {
+//     throw new Error(
+//       `Unbalanced parentheses: ${openingParentheses} opening and ${closingParentheses} closing`
+//     );
+//   }
+
+//   const tokens = condition.split(/\s+/);
+//   for (let i = 0; i < tokens.length; i++) {
+//     const token = tokens[i];
+//     if (numericOperations.some((op) => token.includes(op))) {
+//       const columnWithoutPrefix = token.replace(/\bABS\(|\)|[\W]+/g, ''); // Remove ABS() and special characters
+//       if (!isNumericColumn(columnWithoutPrefix)) {
+//         throw new Error(`Numeric operation is not allowed on non-numeric column: ${columnWithoutPrefix}`);
+//       }
+//     }
+//   }
+// };
+
 const validateCondition = (condition) => {
   const numericOperations = ['+', '-', '*', '/', 'ABS(', '<', '>', '<=', '>='];
+  const allowedNumericOperations = [...numericOperations, 'MIN(', 'MAX(']; // Include MIN and MAX for numeric columns
 
   const openingParentheses = (condition.match(/\(/g) || []).length;
   const closingParentheses = (condition.match(/\)/g) || []).length;
@@ -164,10 +190,15 @@ const validateCondition = (condition) => {
   const tokens = condition.split(/\s+/);
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
-    if (numericOperations.some((op) => token.includes(op))) {
-      const columnWithoutPrefix = token.replace(/\bABS\(|\)|[\W]+/g, ''); // Remove ABS() and special characters
+
+    // Check for numeric operations including MIN and MAX
+    if (allowedNumericOperations.some((op) => token.includes(op))) {
+      // Extract the column name from the token
+      const columnWithoutPrefix = token.replace(/\bABS\(|MIN\(|MAX\(|\)|[\W]+/g, ''); // Remove operations and special characters
       if (!isNumericColumn(columnWithoutPrefix)) {
-        throw new Error(`Numeric operation is not allowed on non-numeric column: ${columnWithoutPrefix}`);
+        throw new Error(
+          `Operation '${token}' is not allowed on non-numeric column: ${columnWithoutPrefix}`
+        );
       }
     }
   }
