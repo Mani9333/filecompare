@@ -38,8 +38,12 @@ const App = () => {
         setRules([]); // Clear all rules after submission
       })
       .catch((error) => {
-        console.error('Error submitting rules:', error);
-      });
+        if (error.response && error.response.data && error.response.data.error) {
+          alert(error.response.data.error); // Show error message from backend
+        } else {
+          console.error('Error submitting rules:', error);
+        }
+      });  
   };
 
   return (
