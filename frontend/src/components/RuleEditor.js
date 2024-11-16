@@ -1,57 +1,50 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import ConditionBuilder from './ConditionBuilder'; // Reusing existing ConditionBuilder component
+// src/components/RuleEditor.js
+import React from 'react';
+import { TextField, IconButton, Box, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const RuleEditor = ({ index, rule, onUpdateRule, onRemoveRule }) => {
-  const [conditions, setConditions] = useState(rule.conditions || []);
-
-  // Handle rule name change
-  const handleNameChange = (event) => {
-    onUpdateRule(index, { ...rule, name: event.target.value, conditions });
+  // Handle changes to rule name and condition
+  const handleNameChange = (e) => {
+    onUpdateRule(index, { ...rule, name: e.target.value });
   };
 
-  // Add a new condition
-  const handleAddCondition = (condition) => {
-    const updatedConditions = [...conditions, condition];
-    setConditions(updatedConditions);
-    onUpdateRule(index, { ...rule, conditions: updatedConditions });
+  const handleConditionChange = (e) => {
+    onUpdateRule(index, { ...rule, condition: e.target.value });
   };
 
   return (
-    <Box sx={{ marginBottom: 4, padding: 2, border: '1px solid #ddd', borderRadius: 1 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <TextField
-          label="Rule Name"
-          variant="outlined"
-          fullWidth
-          value={rule.name}
-          onChange={handleNameChange}
-          sx={{ marginBottom: 2 }}
-        />
+    <Box sx={{ padding: 2, marginBottom: 2, border: '1px solid #ccc', borderRadius: 1 }}>
+      <TextField
+        label="Rule Name"
+        variant="outlined"
+        value={rule.name}
+        onChange={handleNameChange}
+        fullWidth
+        sx={{ marginBottom: 2 }}
+      />
+      <TextField
+        label="Query"
+        placeholder="Enter your custom query here"
+        variant="outlined"
+        value={rule.condition}
+        onChange={handleConditionChange}
+        multiline
+        rows={3}
+        fullWidth
+        sx={{ marginBottom: 2 }}
+      />
+      <Box display="flex" justifyContent="space-between" alignItems="center">
         <Button
-          variant="outlined"
+          variant="contained"
           color="error"
           onClick={() => onRemoveRule(index)}
           startIcon={<DeleteIcon />}
-          sx={{ marginLeft: 2 }}
+          size="small"
         >
           Delete Rule
         </Button>
       </Box>
-
-      <Typography variant="h6" gutterBottom>
-        Conditions
-      </Typography>
-      {conditions.map((condition, i) => (
-        <Typography key={i} variant="body1" sx={{ marginBottom: 1 }}>
-          - {condition}
-        </Typography>
-      ))}
-      <ConditionBuilder onAddCondition={handleAddCondition} />
     </Box>
   );
 };

@@ -15,6 +15,30 @@
     {
       "name": "abccc",
       "condition": "ABS(preruna) < 2"
+    },
+    {
+      "name": "jsldkfjlkjds",
+      "condition": ""
+    },
+    {
+      "name": "dfasfsd",
+      "condition": "ABS(preruna) < 1 AND ABS(prerunb) = mani"
+    },
+    {
+      "name": "asjdflsj",
+      "condition": "prerunc != mani"
+    },
+    {
+      "name": "asfksjdkl",
+      "condition": "ABS(preruna) < 3 AND ABS(prerunb) > 3 AND prerund IN `mani`"
+    },
+    {
+      "name": "asdfasfds",
+      "condition": "asfsfasf"
+    },
+    {
+      "name": "asf",
+      "condition": "asfsd"
     }
   ]
 }

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
@@ -15,7 +14,7 @@ const App = () => {
 
   // Function to add a new rule
   const handleAddRule = () => {
-    setRules([...rules, { name: '', conditions: [] }]);
+    setRules([...rules, { name: '', condition: '' }]);
   };
 
   // Function to update a rule by index
@@ -52,46 +51,42 @@ const App = () => {
         <Divider sx={{ marginBottom: 4 }} />
       </Box>
 
-      <Grid container spacing={2}>
-        {/* Left Side - Column Selector */}
-        <Grid item xs={12} md={4}>
-          <Box sx={{ height: '80vh', overflowY: 'auto', padding: 2, boxShadow: 3, borderRadius: 1, backgroundColor: 'white' }}>
-            <ColumnSelector />
-          </Box>
-        </Grid>
+      <Box display="flex" gap={2}>
+        {/* Left Column - Column Selector */}
+        <Box flex={1}>
+          <ColumnSelector />
+        </Box>
 
-        {/* Right Side - Rule Builder and Buttons */}
-        <Grid item xs={12} md={8}>
-          <Box sx={{ padding: 2, backgroundColor: 'white', boxShadow: 3, borderRadius: 1 }}>
-            {rules.map((rule, index) => (
-              <RuleEditor
-                key={index}
-                index={index}
-                rule={rule}
-                onUpdateRule={handleUpdateRule}
-                onRemoveRule={handleRemoveRule}
-              />
-            ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddRule}
-              startIcon={<AddIcon />}
-              sx={{ marginTop: 2 }}
-            >
-              Create Rule
-            </Button>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleSubmit}
-              sx={{ marginTop: 2, marginLeft: 2 }}
-            >
-              Submit All Rules
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
+        {/* Right Column - Rule Builder */}
+        <Box flex={2}>
+          {rules.map((rule, index) => (
+            <RuleEditor
+              key={index}
+              index={index}
+              rule={rule}
+              onUpdateRule={handleUpdateRule}
+              onRemoveRule={handleRemoveRule}
+            />
+          ))}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddRule}
+            startIcon={<AddIcon />}
+            sx={{ marginTop: 2 }}
+          >
+            Create Rule
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleSubmit}
+            sx={{ marginTop: 2, marginLeft: 2 }}
+          >
+            Submit All Rules
+          </Button>
+        </Box>
+      </Box>
     </Container>
   );
 };

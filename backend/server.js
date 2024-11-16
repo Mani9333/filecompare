@@ -16,7 +16,7 @@ const config = properties.split('\n').reduce((acc, line) => {
 }, {});
 
 const columns = config.columns.split(',');
-const numberTypeColumns = config.numberTypeColumns.split(',');
+const numberTypeOfColumns = (config.numberTypeOfColumns || '').split(','); // Columns that support numeric operations
 const primaryDSPrefix = config.primaryDSPrefix || 'prerun';
 const secondaryDSPrefix = config.secondaryDSPrefix || 'postrun';
 
@@ -31,57 +31,53 @@ app.get('/api/columns', (req, res) => {
   });
 });
 
-// Function to add ABS() around columns in numberTypeColumns where applicable
-const applyAbsToNumberColumns = (condition) => {
-  return condition.replace(/\b(\w+)\b/g, (column) => {
-    // Remove prefix to check if the column is in numberTypeColumns
-    const baseColumnName = column.replace(new RegExp(`^(${primaryDSPrefix}|${secondaryDSPrefix})`), '');
 
-    // If the base column name is in numberTypeColumns, wrap with ABS()
-    if (numberTypeColumns.includes(baseColumnName)) {
-      return `ABS(${column})`;
-    }
-
-    // Otherwise, return the column as is
-    return column;
-  });
+// Utility to check if a column supports numeric operations
+const isNumberTypeColumn = (columnWithPrefix) => {
+  // Remove prefix from the column name
+  const baseColumnName = columnWithPrefix.replace(new RegExp(`^(${primaryDSPrefix}|${secondaryDSPrefix})`), '');
+  // Check if the base name is in the numberTypeOfColumns list
+  return numberTypeOfColumns.includes(baseColumnName);
 };
 
+// Endpoint to validate and add rules
 app.post('/api/rules', (req, res) => {
-    const rules = req.body.rules; // Expecting an array of rules
-  
-    if (!Array.isArray(rules)) {
-      return res.status(400).json({ error: 'Invalid data format. Expected an array of rules.' });
-    }
-  
-    const transformations = JSON.parse(fs.readFileSync('transformations.json', 'utf-8'));
-  
-    // Check for duplicate rule names in transformations
-    const existingRuleNames = new Set(transformations.transformations.map((rule) => rule.name));
-    for (const rule of rules) {
-      if (existingRuleNames.has(rule.name)) {
-        return res.status(400).json({ error: `Rule name "${rule.name}" already exists!` });
+  const rules = req.body.rules;
+
+  if (!Array.isArray(rules)) {
+    return res.status(400).json({ error: 'Invalid data format. Expected an array of rules.' });
+  }
+
+  const transformations = JSON.parse(fs.readFileSync('transformations.json', 'utf-8'));
+
+  rules.forEach((rule) => {
+    const { name, condition } = rule;
+
+    // Validate the condition
+    const invalidOperations = [];
+    const processedCondition = condition.replace(/\b(\w+)\b/g, (column) => {
+      if (isNumberTypeColumn(column)) {
+        return column; // Valid numeric column
+      } else {
+        invalidOperations.push(column);
+        return column; // Leave it as is but mark it invalid for logging
       }
-    }
-  
-    // Process each rule and add it to transformations
-    rules.forEach((rule) => {
-      const { name, conditions } = rule;
-  
-      // Ensure all conditions are processed individually and concatenated with "AND"
-      const processedConditions = conditions.map(applyAbsToNumberColumns);
-      const finalCondition = processedConditions.join(' AND '); // Join all conditions with "AND"
-  
-      // Add the new rule with the processed condition
-      transformations.transformations.push({ name, condition: finalCondition });
     });
-  
-    // Save the updated transformations file
-    fs.writeFileSync('transformations.json', JSON.stringify(transformations, null, 2));
-  
-    res.json({ message: 'Rules added successfully!' });
+
+    // If there are invalid operations, return an error
+    if (invalidOperations.length > 0) {
+      return res.status(400).json({
+        error: `Invalid operation on string-type columns: ${invalidOperations.join(', ')}`,
+      });
+    }
+
+    // If validation passed, add the rule
+    transformations.transformations.push({ name, condition: processedCondition });
   });
-  
+
+  fs.writeFileSync('transformations.json', JSON.stringify(transformations, null, 2));
+  res.json({ message: 'Rules added successfully!' });
+});
 
 const PORT = 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
