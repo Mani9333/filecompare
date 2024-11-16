@@ -152,6 +152,15 @@ const isNumericColumn = (column) => {
 const validateCondition = (condition) => {
   const numericOperations = ['+', '-', '*', '/', 'ABS(', '<', '>', '<=', '>='];
 
+  const openingParentheses = (condition.match(/\(/g) || []).length;
+  const closingParentheses = (condition.match(/\)/g) || []).length;
+
+  if (openingParentheses !== closingParentheses) {
+    throw new Error(
+      `Unbalanced parentheses: ${openingParentheses} opening and ${closingParentheses} closing`
+    );
+  }
+
   const tokens = condition.split(/\s+/);
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];

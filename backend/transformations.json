@@ -15,6 +15,10 @@
     {
       "name": "Ruleone",
       "condition": "ddd"
+    },
+    {
+      "name": "RuleThree",
+      "condition": "prerunc != postrunc AND prerund IN ('a', 'b', 'c') AND postrund NOT IN ('a', 'b', 'c')"
     }
   ]
 }
